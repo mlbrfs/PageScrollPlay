@@ -7,11 +7,10 @@
 //
 
 import UIKit
-
+// 随机色
 func arcRandomColor() -> UIColor {
     return UIColor(red:CGFloat(arc4random_uniform(255))/255.0, green: CGFloat(arc4random_uniform(255))/255.0, blue: CGFloat(arc4random_uniform(255))/255.0, alpha: 1)
 }
-
 
 class TextViewController: UIViewController {
 
@@ -24,15 +23,15 @@ class TextViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         view.backgroundColor = UIColor.white
         let rect: CGRect = CGRect(x: 0, y: 20, width: view.frame.size.width, height: 200)
-        
+        // 实例化
         pagePlayer = ScrollViewPagePlayer<Model>(frame: rect, registCellClass: PagePlayerCell.classForCoder() as! ScrollViewPageCellContent<Model>.Type)
         pagePlayer?.playDelegate = self
         view.addSubview(pagePlayer!)
         
         pageView = UIPageControl(frame: CGRect(x: (UIScreen.main.bounds.size.width - 100) * 0.5, y: 200, width: 100, height: 20))
         view.addSubview(pageView!)
-        pagePlayer!.dataSource = getDate(2)
-        pageView?.numberOfPages = pagePlayer!.dataSource!.count
+        pagePlayer!.dataArray = getDate(2)
+        pageView?.numberOfPages = pagePlayer!.dataArray!.count
         pageView?.currentPage = pagePlayer!.selectedPage
         addSubButtons()
         
@@ -86,7 +85,7 @@ class TextViewController: UIViewController {
     }
     // 按钮组的点击事件
     func btnHasClick(_ btn: UIButton) {
-        
+        // 不同的的按钮点击 实现不同的效果
         switch btn.tag % 2 {
         case 0:
             pagePlayer!.direction = .horizontal
@@ -97,21 +96,16 @@ class TextViewController: UIViewController {
         }
         switch btn.tag / 2 {
         case 0:
-            pagePlayer!.dataSource = getDate(2)
+            pagePlayer!.dataArray = getDate(2)
         case 1:
-            pagePlayer!.dataSource = getDate(1)
+            pagePlayer!.dataArray = getDate(1)
         case 2:
-            pagePlayer!.dataSource = getDate(5)
+            pagePlayer!.dataArray = getDate(5)
         default:
             break
         }
-        pageView?.numberOfPages = pagePlayer!.dataSource!.count
-    }
-    
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        pageView!.isHidden = pagePlayer!.dataArray!.count <= 1
+        pageView!.numberOfPages = pagePlayer!.dataArray!.count
     }
     
 }

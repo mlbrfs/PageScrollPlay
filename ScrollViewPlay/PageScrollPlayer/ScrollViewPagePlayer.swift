@@ -48,13 +48,13 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
     public var isChageShowView: Bool = false
     
     // 数据源
-    public var dataSource: [DATASOURCE]? {
+    public var dataArray: [DATASOURCE]? {
         didSet {
             // 初始化视图为第一个
             currentPage = 0
             // 改为默认 不可滑动
             self.isScrollEnabled = false
-            if let dataSource = dataSource {
+            if let dataSource = dataArray {
                 if dataSource.count > 1 {
                     // dataSource大于一时才能滑动
                     self.isScrollEnabled = true
@@ -63,7 +63,7 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
                 setLeftAndRightDate()
                 
                 if dataSource.count > 0 {
-                    if self.centerView.contentView!.dataSource != nil {
+                    if self.centerView.contentView!.modelData != nil {
                         if isChageShowView {// 刷新当前显示视图
                             self.centerView.contentView!.setValues(For: dataSource[0])
                         }
@@ -155,8 +155,8 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
     
     // 设置左边和右边视图的内容
     private func setLeftAndRightDate() {
-        if dataSource != nil && dataSource!.count > 1 {
-            let dataSource = self.dataSource!
+        if dataArray != nil && dataArray!.count > 1 {
+            let dataSource = self.dataArray!
             // 做一些事情通过选中的page来
             var leftSource: DATASOURCE?
             var rightSource: DATASOURCE?
@@ -184,11 +184,11 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
         func judgeChangeView() {
             // 即将显示上一个试图
             func willlShowLastView() {
-                if dataSource!.count > 1 {
+                if dataArray!.count > 1 {
                     // 给cell 设置数据
-                    centerView.contentView!.setValues(For: leftView.contentView!.dataSource)
+                    centerView.contentView!.setValues(For: leftView.contentView!.modelData)
                     // 设置当前currentPage
-                    currentPage = currentPage == 0 ? dataSource!.count - 1 : currentPage - 1
+                    currentPage = currentPage == 0 ? dataArray!.count - 1 : currentPage - 1
                     // 代理的回调
                     playDelegate?.scrollViewDidChange!(lastPage: currentPage)
                     // 设置左右的数据
@@ -197,9 +197,9 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
             }
             // 即将显示下一个试图
             func willShowNextView() {
-                if dataSource!.count > 1 {
-                    centerView.contentView!.setValues(For: rightView.contentView!.dataSource)
-                    currentPage = currentPage == dataSource!.count - 1 ? 0 : currentPage + 1
+                if dataArray!.count > 1 {
+                    centerView.contentView!.setValues(For: rightView.contentView!.modelData)
+                    currentPage = currentPage == dataArray!.count - 1 ? 0 : currentPage + 1
                     playDelegate?.scrollViewDidChange!(lastPage: currentPage)
                     setLeftAndRightDate()
                 }
@@ -229,7 +229,7 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
             }
         }
         
-        if dataSource != nil {
+        if dataArray != nil {
             judgeChangeView()
         }
     }

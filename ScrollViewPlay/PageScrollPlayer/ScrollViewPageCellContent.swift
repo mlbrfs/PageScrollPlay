@@ -10,7 +10,7 @@ import UIKit
 
 open class ScrollViewPageCellContent<DATASOURCE> : UIView{
     
-    open var dataSource: DATASOURCE?
+    open var modelData: DATASOURCE?
     
     required public init() {
         super.init(frame: CGRect())
@@ -18,7 +18,7 @@ open class ScrollViewPageCellContent<DATASOURCE> : UIView{
     
     public convenience init(_ dataSource: DATASOURCE) {
         self.init()
-        self.dataSource = dataSource
+        self.modelData = dataSource
     }
     
     required public init?(coder aDecoder: NSCoder) {
@@ -26,7 +26,7 @@ open class ScrollViewPageCellContent<DATASOURCE> : UIView{
     }
     
     open func setValues(For source: DATASOURCE?) {
-        dataSource = source
+        modelData = source
     }
     
 }
