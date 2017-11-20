@@ -7,7 +7,7 @@
 //
 
 import UIKit
-//import PageScrollPlayer
+import PageScrollPlayer
 
 class PagePlayerCell: ScrollViewPageCellContent<Model> {
    

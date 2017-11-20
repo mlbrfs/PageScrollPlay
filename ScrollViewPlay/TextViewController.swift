@@ -8,6 +8,8 @@
 
 import UIKit
 // 随机色
+import PageScrollPlayer
+
 func arcRandomColor() -> UIColor {
     return UIColor(red:CGFloat(arc4random_uniform(255))/255.0, green: CGFloat(arc4random_uniform(255))/255.0, blue: CGFloat(arc4random_uniform(255))/255.0, alpha: 1)
 }
@@ -78,13 +80,13 @@ class TextViewController: UIViewController {
             btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
             btn.titleLabel?.autoresizesSubviews = true
             btn.tag = i
-            btn.addTarget(self, action: #selector(TextViewController.btnHasClick(_:)), for: .touchUpInside)
+            btn.addTarget(self, action: #selector(btnHasClick(_:)), for: .touchUpInside)
             view.addSubview(btn)
         }
         
     }
     // 按钮组的点击事件
-    func btnHasClick(_ btn: UIButton) {
+    @objc func btnHasClick(_ btn: UIButton) {
         // 不同的的按钮点击 实现不同的效果
         switch btn.tag % 2 {
         case 0:
