@@ -9,8 +9,10 @@
 import UIKit
 
 public enum PagePlayerScrollDirection {
-    case vertical     // 纵向
-    case horizontal   // 横向
+    /// 纵向
+    case vertical
+    // 横向
+    case horizontal
 }
 
  @objc public protocol ScrollViewPagePlayerDelegate: UIScrollViewDelegate {
@@ -26,28 +28,28 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
     private var leftView: ScrollViewPageCell<DATASOURCE>
     private var centerView: ScrollViewPageCell<DATASOURCE>
     private var rightView: ScrollViewPageCell<DATASOURCE>
-    // 滚动方向水平方向
+    /// 滚动方向水平方向
     public var direction: PagePlayerScrollDirection {
         didSet{
             setDefaultContentOffset()
             setContentSizeWithFrame()
         }
     }
-    // 代理
+    /// 代理
     weak public var playDelegate: ScrollViewPagePlayerDelegate?
     
     private var currentPage: Int
-    
+    /// 当前选中的按钮
     public var selectedPage: Int {
         get {
             return currentPage
         }
     }
     
-    // 设置切换数据时是否需要刷新当前正在显示视图  默认为false
-    public var isChageShowView: Bool = false
+    /// 设置切换数据时是否需要刷新当前正在显示视图  默认为false
+    public var isChangeShowView: Bool = false
     
-    // 数据源
+    /// 数据源
     public var dataArray: [DATASOURCE]? {
         didSet {
             // 初始化视图为第一个
@@ -64,7 +66,7 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
                 
                 if dataSource.count > 0 {
                     if self.centerView.contentView!.modelData != nil {
-                        if isChageShowView {// 刷新当前显示视图
+                        if isChangeShowView {// 刷新当前显示视图
                             self.centerView.contentView!.setValues(For: dataSource[0])
                         }
                     } else {
@@ -81,7 +83,7 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
             setContentSizeWithFrame()
         }
     }
-    
+    /// 初始化方法
     required public init(frame: CGRect, registCellClass className: ScrollViewPageCellContent<DATASOURCE>.Type) {
         //实例化三个子视图
         leftView = ScrollViewPageCell(contentView: className<DATASOURCE>.init())
@@ -96,7 +98,6 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
         addSubview(leftView)
         addSubview(centerView)
         addSubview(rightView)
-        
         
         func setDefaultValues() {
             isPagingEnabled = true

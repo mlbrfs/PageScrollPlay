@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
                       this project provide all kinds of categories for iOS developer
                    DESC
 
-  s.homepage     = "https://github.com/121372288/PageScrollPlayer"
+  s.homepage     = "https://github.com/121372288/PageScrollPlay"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -64,7 +64,7 @@ Pod::Spec.new do |s|
   #  the deployment target. You can optionally include the target after the platform.
   #
 
-  # s.platform     = :ios
+  s.platform     = :ios, "8.0"
   # s.platform     = :ios, "5.0"
 
   #  When using multiple platforms
@@ -80,7 +80,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/121372288/PageScrollPlayer.git", :tag => "0.0.1" }
+  s.source       = { :git => "https://github.com/121372288/PageScrollPlay.git", :tag => "0.0.1" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -91,7 +91,7 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Classes", "Classes/**/*.{h,m,swift}"
+  s.source_files  = "Classes", "PageScrollPlayer/**/*.{h,m,swift}"
   s.exclude_files = "Classes/Exclude"
 
   # s.public_header_files = "Classes/**/*.h"
