@@ -11,7 +11,7 @@ import UIKit
 public enum PagePlayerScrollDirection {
     /// 纵向
     case vertical
-    // 横向
+    /// 横向
     case horizontal
 }
 
