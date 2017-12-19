@@ -15,18 +15,36 @@ public enum PagePlayerScrollDirection {
     case horizontal
 }
 
- @objc public protocol ScrollViewPagePlayerDelegate: UIScrollViewDelegate {
+public protocol ScrollViewPagePlayerDelegate: UIScrollViewDelegate {
     
-    @objc optional func scrollViewDidChange(lastPage page: Int)
+    func scrollViewDidChange(lastPage page: Int)
     
-    @objc optional func scrollViewDidChange(nextPage page: Int)
+    func scrollViewDidChange(nextPage page: Int)
+    
+    func scrollViewDidSelected(page: Int)
+    
+}
+
+extension ScrollViewPagePlayerDelegate {
+    
+    public func scrollViewDidChange(lastPage page: Int) {}
+    
+    public func scrollViewDidChange(nextPage page: Int) {}
+    
+    public func scrollViewDidSelected(page: Int) {}
     
 }
 
 public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
     
     private var leftView: ScrollViewPageCell<DATASOURCE>
-    private var centerView: ScrollViewPageCell<DATASOURCE>
+    private var centerView: ScrollViewPageCell<DATASOURCE> {
+        didSet {
+            centerView.selected = {[weak self] in
+                self?.playDelegate?.scrollViewDidSelected(page: self!.currentPage )
+            }
+        }
+    }
     private var rightView: ScrollViewPageCell<DATASOURCE>
     /// 滚动方向水平方向
     public var direction: PagePlayerScrollDirection {
@@ -89,6 +107,7 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
         leftView = ScrollViewPageCell(contentView: className<DATASOURCE>.init())
         centerView = ScrollViewPageCell(contentView: className<DATASOURCE>.init())
         rightView = ScrollViewPageCell(contentView: className<DATASOURCE>.init())
+        
         // 初始化当前显示页
         currentPage = 0
         // 设置默认滑动方向
@@ -119,9 +138,9 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
     // 设置默认偏移量
     private func setDefaultContentOffset() {
         if direction == .horizontal {
-            contentOffset = CGPoint(x: self.width, y: 0)
+            contentOffset = CGPoint(x: width, y: 0)
         } else {
-            contentOffset = CGPoint(x: 0, y: self.height)
+            contentOffset = CGPoint(x: 0, y: height)
         }
     }
     // 设置ContentSize
@@ -145,12 +164,12 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
         switch direction {
         case .horizontal:
             leftView.x = 0
-            centerView.x = self.width
-            rightView.x = self.width * 2
+            centerView.x = width
+            rightView.x = width * 2
         case .vertical:
             leftView.y = 0
-            centerView.y = self.height
-            rightView.y = self.height * 2
+            centerView.y = height
+            rightView.y = height * 2
         }
     }
     
@@ -191,7 +210,7 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
                     // 设置当前currentPage
                     currentPage = currentPage == 0 ? dataArray!.count - 1 : currentPage - 1
                     // 代理的回调
-                    playDelegate?.scrollViewDidChange!(lastPage: currentPage)
+                    playDelegate?.scrollViewDidChange(lastPage: currentPage)
                     // 设置左右的数据
                     setLeftAndRightDate()
                 }
@@ -201,29 +220,29 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
                 if dataArray!.count > 1 {
                     centerView.contentView!.setValues(For: rightView.contentView!.modelData)
                     currentPage = currentPage == dataArray!.count - 1 ? 0 : currentPage + 1
-                    playDelegate?.scrollViewDidChange!(lastPage: currentPage)
+                    playDelegate?.scrollViewDidChange(lastPage: currentPage)
                     setLeftAndRightDate()
                 }
             }
             
             if direction == .horizontal {
                 if self.contentOffset.x == 0 {
-                    contentOffset = CGPoint(x: self.width, y: 0);
+                    contentOffset = CGPoint(x: width, y: 0);
                     // 上一个
                     willlShowLastView()
-                } else if contentOffset.x == self.width * 2 {
-                    contentOffset = CGPoint(x: self.width, y: 0);
+                } else if contentOffset.x == width * 2 {
+                    contentOffset = CGPoint(x: width, y: 0);
                     //下一个
                     willShowNextView()
                 }
                 
             } else if direction == .vertical {
                 if self.contentOffset.y == 0 {
-                    contentOffset = CGPoint(x: 0, y: self.height);
+                    contentOffset = CGPoint(x: 0, y: height);
                     // 上一个
                     willlShowLastView()
-                } else if contentOffset.y == self.height * 2 {
-                    contentOffset = CGPoint(x: 0, y: self.height);
+                } else if contentOffset.y == height * 2 {
+                    contentOffset = CGPoint(x: 0, y: height);
                     //下一个
                     willShowNextView()
                 }
@@ -238,5 +257,63 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
     deinit {
         removeObserver(self, forKeyPath: pagePlayerObserKey)
     }
+    /// 轮播显示时长
+    public var timerSpacing: Double = 3 {
+        didSet {
+            openTimer()
+        }
+    }
+    private var timer: DispatchSourceTimer?
+    /// 开始定时器
+    public func openTimer() {
+        timer?.cancel()
+        timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.main)
+        timer?.schedule(wallDeadline: .now(), repeating: timerSpacing)
+        timer?.setEventHandler(handler: {
+            
+            self.scrollToNextPage()
+            
+        })
+        if #available(iOS 10.0, *) {
+            timer?.activate()
+        } else {
+            timer?.resume()
+        }
+    }
+    /// 结束定时器
+    public func cancelTimer() {
+        timer?.cancel()
+        timer = nil
+    }
+    
+}
+
+extension ScrollViewPagePlayer {
+    /// 滑到下一页
+    func scrollToNextPage() {
+        
+        if isDragging || isTracking {
+            return
+        }
+        if let array = dataArray {
+            if array.count <= 1 {
+                return
+            }
+        } else {
+            return
+        }
+        
+        ///  滑到下一页
+        let nextPoint: CGPoint
+        switch direction {
+        case .vertical:
+            nextPoint = CGPoint(x: 0, y: height * 2)
+        case .horizontal:
+            nextPoint = CGPoint(x: width * 2, y: 0)
+        }
+        setContentOffset(nextPoint, animated: true)
+        
+    }
+    
     
 }

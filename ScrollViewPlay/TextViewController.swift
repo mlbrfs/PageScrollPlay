@@ -26,13 +26,22 @@ class TextViewController: UIViewController {
         view.backgroundColor = UIColor.white
         let rect: CGRect = CGRect(x: 0, y: 20, width: view.frame.size.width, height: 200)
         // 实例化
-        pagePlayer = ScrollViewPagePlayer<Model>(frame: rect, registCellClass: PagePlayerCell.classForCoder() as! ScrollViewPageCellContent<Model>.Type)
+        pagePlayer = ScrollViewPagePlayer<Model>(frame: rect, registCellClass: PagePlayerCell.self)
         pagePlayer?.playDelegate = self
         view.addSubview(pagePlayer!)
         
         pageView = UIPageControl(frame: CGRect(x: (UIScreen.main.bounds.size.width - 100) * 0.5, y: 200, width: 100, height: 20))
         view.addSubview(pageView!)
-        pagePlayer!.dataArray = getDate(2)
+        
+        pagePlayer?.openTimer()
+        pagePlayer?.timerSpacing = 3
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            self.pagePlayer?.cancelTimer()
+
+        }
+        
+        pagePlayer?.dataArray = getDate(2)
         pageView?.numberOfPages = pagePlayer!.dataArray!.count
         pageView?.currentPage = pagePlayer!.selectedPage
         addSubButtons()
@@ -113,6 +122,7 @@ class TextViewController: UIViewController {
 }
 
 extension TextViewController: ScrollViewPagePlayerDelegate {
+    
     // 代理
     func scrollViewDidChange(lastPage page: Int) {
         pageView?.currentPage = pagePlayer!.selectedPage

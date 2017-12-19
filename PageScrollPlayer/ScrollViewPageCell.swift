@@ -10,10 +10,16 @@ import UIKit
 
 class ScrollViewPageCell<DATASOURCE>: UIView {
 
+    var selected: (()->())?
+    
     var contentView: ScrollViewPageCellContent<DATASOURCE>?
     
     init() {
         super.init(frame: CGRect())
+//        self.contentView = contentView
+//        self.addSubview(contentView)
+//        let ges = UITapGestureRecognizer.init(target: self, action: #selector(didTap))
+//        addGestureRecognizer(ges)
     }
     
     required convenience init(contentView: ScrollViewPageCellContent<DATASOURCE>) {
@@ -21,9 +27,15 @@ class ScrollViewPageCell<DATASOURCE>: UIView {
         self.init()
         
         self.contentView = contentView
-        
         self.addSubview(contentView)
-
+        let ges = UITapGestureRecognizer.init(target: self, action: #selector(didTap))
+        addGestureRecognizer(ges)
+    }
+    
+    @objc private func didTap() {
+        
+        selected?()
+        
     }
     
     override func layoutSubviews() {
