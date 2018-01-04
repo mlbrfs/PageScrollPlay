@@ -132,4 +132,10 @@ extension TextViewController: ScrollViewPagePlayerDelegate {
         pageView?.currentPage = pagePlayer!.selectedPage
     }
     
+    func scrollViewDidSelected(page: Int) {
+        
+        print(page)
+        
+    }
+    
 }

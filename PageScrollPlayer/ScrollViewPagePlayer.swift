@@ -38,13 +38,7 @@ extension ScrollViewPagePlayerDelegate {
 public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
     
     private var leftView: ScrollViewPageCell<DATASOURCE>
-    private var centerView: ScrollViewPageCell<DATASOURCE> {
-        didSet {
-            centerView.selected = {[weak self] in
-                self?.playDelegate?.scrollViewDidSelected(page: self!.currentPage )
-            }
-        }
-    }
+    private var centerView: ScrollViewPageCell<DATASOURCE>
     private var rightView: ScrollViewPageCell<DATASOURCE>
     /// 滚动方向水平方向
     public var direction: PagePlayerScrollDirection {
@@ -118,6 +112,12 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
         addSubview(centerView)
         addSubview(rightView)
         
+        centerView.selected = {[weak self] in
+            if let dataArray = self?.dataArray, dataArray.count > 0 {
+                self?.playDelegate?.scrollViewDidSelected(page: self!.currentPage)
+            }
+        }
+        
         func setDefaultValues() {
             isPagingEnabled = true
             bounces = false
@@ -133,6 +133,12 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
         
         /* 添加自己为监听者 */
         addObserver(self, forKeyPath: pagePlayerObserKey, options: .new, context: nil)
+    }
+    
+    private func setSelectedTarget() {
+        
+        
+        
     }
     
     // 设置默认偏移量
@@ -181,14 +187,14 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
             var leftSource: DATASOURCE?
             var rightSource: DATASOURCE?
             if (currentPage == 0) {
-                leftSource = dataSource[dataSource.count - 1];
-                rightSource = dataSource[currentPage + 1];
+                leftSource = dataSource[dataSource.count - 1]
+                rightSource = dataSource[currentPage + 1]
             } else if (currentPage == dataSource.count - 1) {
-                leftSource = dataSource[currentPage - 1];
-                rightSource = dataSource[0];
+                leftSource = dataSource[currentPage - 1]
+                rightSource = dataSource[0]
             } else {
-                leftSource = dataSource[currentPage - 1];
-                rightSource = dataSource[currentPage + 1];
+                leftSource = dataSource[currentPage - 1]
+                rightSource = dataSource[currentPage + 1]
             }
             leftView.contentView!.setValues(For: leftSource)
             rightView.contentView!.setValues(For: rightSource)
@@ -256,6 +262,7 @@ public final class ScrollViewPagePlayer<DATASOURCE>: UIScrollView {
     
     deinit {
         removeObserver(self, forKeyPath: pagePlayerObserKey)
+        cancelTimer()
     }
     /// 轮播显示时长
     public var timerSpacing: Double = 3 {
